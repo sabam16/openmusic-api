@@ -1,0 +1,10 @@
+{
+  "dev": {
+    "driver": "pg",
+    "host": "localhost",
+    "port": 5432,
+    "database": "openmusic",
+    "user": "postgres",
+    "password": ";P0lo9ki8"
+  }
+}
