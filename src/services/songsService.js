@@ -28,24 +28,30 @@ class SongsService {
     return result.rows[0].id;
   }
 
-  async getSongs({title, performer}) {
+  async getSongs({ title, performer }) {
     let baseQuery = 'SELECT id, title, performer FROM songs';
     const conditions = [];
     const values = [];
+    
     if (title) {
       values.push(`%${title.toLowerCase()}%`);
-    conditions.push(`LOWER(title) LIKE $${values.length}`);
+      conditions.push(`LOWER(title) LIKE $${values.length}`);
     }
-     if (performer) {
-    values.push(`%${performer.toLowerCase()}%`);
-    conditions.push(`LOWER(performer) LIKE $${values.length}`);
-  }
-   if (conditions.length > 0) {
-    baseQuery += ' WHERE ' + conditions.join(' AND ');
-  }
-    if(!title && !performer){
+    
+    if (performer) {
+      values.push(`%${performer.toLowerCase()}%`);
+      conditions.push(`LOWER(performer) LIKE $${values.length}`);
+    }
+    
+    if (conditions.length > 0) {
+      baseQuery += ' WHERE ' + conditions.join(' AND ');
+    }
+    
+    if (!title && !performer) {
       const result = await db.query('SELECT id, title, performer FROM songs');
+      return result.rows;
     }
+    
     const result = await db.query(baseQuery, values);
     return result.rows;
   }
@@ -63,7 +69,8 @@ class SongsService {
   async editSongById(id, { title, year, genre, performer, duration, albumId }) {
     const query = {
       text: `UPDATE songs SET title = $1, year = $2, genre = $3,
-             performer = $4, duration = $5, album_id = $6 WHERE id = $7 RETURNING id`,
+             performer = $4, duration = $5, album_id = $6
+             WHERE id = $7 RETURNING id`,
       values: [title, year, genre, performer, duration, albumId, id],
     };
     const result = await db.query(query);
